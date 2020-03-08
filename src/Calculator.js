@@ -2,6 +2,8 @@ import React from 'react';
 import Keypad from './Keypad';
 import Screen from './Screen';
 import Big from 'big.js';
+import {nthRoot} from 'mathjs';
+import {pow} from 'mathjs';
 
 export class Calculator extends React.Component {
   constructor(props) {
@@ -13,10 +15,12 @@ export class Calculator extends React.Component {
       commandStack: [],
       prevButton: '0',
       runningTotal: 0,
-      stackString: ''
+      stackString: '',
+      lastKey: ''
     };
     this.handleClick = this.handleClick.bind(this);
     this.keyFunc = this.keyFunc.bind(this);
+    this.keyDown = this.keyDown.bind(this);
     this.textInput = React.createRef();
     this.focusTextInput = this.focusTextInput.bind(this);
   }
@@ -28,10 +32,43 @@ export class Calculator extends React.Component {
     else if (string==='÷') return true;
     else if (string==='%') return true;
     else if (string==='ₓʸ') return true;
+    else if (string==='LOG') return true;
+    else if (string==='√') return true;
     else return false;
   }
 
+  componentDidMount() {
+    this.focusTextInput();
+    this.loadLocalState();
+  }
+
+  setLocalState(){
+    localStorage.setItem('localState', JSON.stringify(this.state));
+  }
+  loadLocalState(){
+    const localState = JSON.parse(localStorage.getItem('localState'));
+    console.log(localState)
+
+    if(localState){
+      console.log("Inside local results")
+      this.setState({
+        value: localState.value,
+        screenValue: localState.screenValue,
+        numStack: localState.numStack,
+        commandStack: localState.commandStack,
+        prevButton: localState.prevButton,
+        runningTotal: localState.runningTotal,
+        stackString: localState.stackString
+      })
+    }
+  }
+  keyDown(e){
+    switch (e.keyCode){
+      case 8: this.handleClick('DEL'); break;
+    }
+  }
   keyFunc(e) {
+    console.log(e)
     console.log(e.charCode)
     switch (e.charCode){
       case 48: this.handleClick('0'); break;
@@ -56,13 +93,13 @@ export class Calculator extends React.Component {
       case 61: this.handleClick('='); break;
       case 13: this.handleClick('='); break;
       case 94: this.handleClick('ₓʸ'); break;
+      case 190: this.handleClick('.'); break;
     }
   }
   focusTextInput() {
    // Explicitly focus the text input using the raw DOM API
    // Note: we're accessing "current" to get the DOM node
-  this.textInput.current.focus();
-   console.log("hi");
+    this.textInput.current.focus();
   }
 
   handleClick(buttonVal) {
@@ -79,7 +116,35 @@ export class Calculator extends React.Component {
         commandStack: [],
         prevButton: '0',
         stackString: ' '
-      })
+      }, () => this.setLocalState()
+      )
+    }
+
+    //Handle DEL
+    if (buttonVal==='DEL'){
+      let numAsString = this.state.value.toString();
+      if (numAsString.length===1){
+        this.setState({
+          value: '0',
+          screenValue: '0'
+        }, () => this.setLocalState()
+        )
+      } else {
+        this.setState({
+          value: numAsString.slice(0,numAsString.length-1),
+          screenValue: numAsString.slice(0,numAsString.length-1)
+        }, () => this.setLocalState()
+        )
+      }
+    }
+    //Handle +/-
+    if (buttonVal==='+/-'){
+      console.log(this.state.value);
+      this.setState({
+        value: this.state.value * -1,
+        screenValue: this.state.value *-1
+      }, () => this.setLocalState()
+      )
     }
 
     // Handle decimal point on a 0
@@ -95,7 +160,8 @@ export class Calculator extends React.Component {
       this.setState({
         value: buttonVal,
         screenValue: buttonVal
-      })
+      }, () => this.setLocalState()
+      )
     }
 
     // Handle additional numbers or decimal points
@@ -103,7 +169,8 @@ export class Calculator extends React.Component {
       this.setState({
         value: this.state.value + buttonVal,
         screenValue: this.state.value + buttonVal
-      })
+      }, () => this.setLocalState()
+      )
     }
 
     //Handle =
@@ -112,11 +179,13 @@ export class Calculator extends React.Component {
       if (this.state.value.length > 10){
         this.setState({
           stackString: this.state.stackString + parseFloat(this.state.value).toPrecision(3) + " " + buttonVal + " "
-        })
+        }, () => this.setLocalState()
+        )
       } else {
         this.setState({
           stackString: this.state.stackString + this.state.value + " " + buttonVal + " "
-        })
+        }, () => this.setLocalState()
+        )
       }
       // this.state.commandStack.push(buttonVal)
       this.evaluateStacks();
@@ -125,7 +194,7 @@ export class Calculator extends React.Component {
     }
 
     //Handle special chars (+,-,*,/)
-    // ! Needs to stop two special chars [of diff kinds] in a row !
+    // ! Needs to handle two special chars [of diff kinds] in a row !
     else if (this.isSpecialChar(buttonVal)&& !this.isSpecialChar(this.state.prevButton)){
 
       this.state.numStack.push(this.state.value)
@@ -133,21 +202,27 @@ export class Calculator extends React.Component {
       if (this.state.value.length > 10){
         this.setState({
           stackString: this.state.stackString + parseFloat(this.state.value).toPrecision(3) + " " + buttonVal + " "
-        })
+        }, () => this.setLocalState()
+        )
       } else {
         this.setState({
           stackString: this.state.stackString + this.state.value + " " + buttonVal + " "
-        })
+        }, () => this.setLocalState()
+        )
       }
 
       this.setState({
         value: '0',
-      })
+      }, () => this.setLocalState()
+      )
     }
     //Set prevButton
     this.setState({
       prevButton: buttonVal
-    })
+    }, () => this.setLocalState()
+    )
+
+    this.setLocalState();
   }
 
   evaluateStacks() {
@@ -204,27 +279,57 @@ export class Calculator extends React.Component {
         runningTotal = x.mod(parseFloat(this.state.numStack[i+1]))
       }
 
-      if (this.state.commandStack[i]==='ₓʸ'){
-        if (parseFloat(this.state.numStack[i+1])<=1000){
-          let x = new Big(runningTotal)
-          runningTotal = x.pow(parseFloat(this.state.numStack[i+1]))
+      if (this.state.commandStack[i]==='√'){
+        try{
+          let x = runningTotal;
+          runningTotal = nthRoot(x,this.state.numStack[i+1]);
         }
-        else {
-          let x = new Big(runningTotal)
+        catch (e) {
+          console.log(e)
           this.setState({
-            value: 0,
-            screenValue: 'Error: Exponent too large',
+            value: '0',
+            screenValue: 'Error: Cannot find root',
             numStack: [],
             commandStack: [],
             prevButton: '0',
             stackString: ' '
           })
-          return;
-          // runningTotal = Math.pow(runningTotal,parseFloat(this.state.numStack[i+1]))
+          return
         }
 
       }
+      // if (this.state.commandStack[i]==='LOG'){
+      //   let x = new Big(runningTotal)
+      //   runningTotal = x.mod(parseFloat(this.state.numStack[i+1]))
+      // }
+
+      if (this.state.commandStack[i]==='ₓʸ'){
+        
+        try{
+          if (parseFloat(this.state.numStack[i+1])<=1000){
+            let x = new Big(runningTotal)
+            runningTotal = x.pow(parseFloat(this.state.numStack[i+1]))
+          }
+          else {
+            let x = new Big(runningTotal)
+            this.setState({
+              value: 0,
+              screenValue: 'Error: Exponent too large',
+              numStack: [],
+              commandStack: [],
+              prevButton: '0',
+              stackString: ' '
+            })
+            return;
+            // runningTotal = Math.pow(runningTotal,parseFloat(this.state.numStack[i+1]))
+          }
+        } catch (e) {
+          let x = runningTotal;
+          runningTotal = pow(x,this.state.numStack[i+1]);
+        }
+      }
     }
+    //End for loop
     console.log('Runningtotal: ' + runningTotal.toString().length);
     if (runningTotal.toString().length<16){
       this.setState({
@@ -233,7 +338,8 @@ export class Calculator extends React.Component {
         screenValue: runningTotal.toString(),
         numStack: [],
         commandStack: []
-      })
+      }, () => this.setLocalState()
+      )
     }
     else{
       this.setState({
@@ -242,7 +348,8 @@ export class Calculator extends React.Component {
         // screenValue: runningTotal.toString(),
         numStack: [],
         commandStack: []
-      })
+      }, () => this.setLocalState()
+      )
     }
 
     console.log("Running total: "+runningTotal);
@@ -253,7 +360,7 @@ export class Calculator extends React.Component {
   render() {
     // This syntax ensures `this` is bound within handleClick
     return (
-      <div onKeyPress = {this.keyFunc} onClick={this.focusTextInput} ref={this.textInput} tabIndex={0}>
+      <div onKeyPress= {this.keyFunc} onKeyDown={this.keyDown} onClick={this.focusTextInput} ref={this.textInput} tabIndex={0}>
         <Screen
           value = {this.state.screenValue}
           stackString = {this.state.stackString}

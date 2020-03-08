@@ -13,7 +13,7 @@ class Screen extends React.Component {
         <div>
           {this.props.value}
         </div>
-        <div className="text-small text-orange mar-top-small">
+        <div className="text-small text-summary mar-top-small">
           {this.props.stackString}
         </div>
       </div>

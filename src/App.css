@@ -99,17 +99,21 @@
 .app {
   text-align: center;
   align-items: center;
-  background-color: #eee;
+  background-color: #222;
   color: white;
   display: flex;
   flex-direction: column;
-  font-size: 18px;
+  font-size: 16px;
   justify-content: center;
   min-height: 100vh;
 }
 
 .app-link {
   color: #09d3ac;
+}
+.keypad-row {
+  display: flex;
+  flex-direction: row;
 }
 .button {
   border-right: 1px solid #cdcdcd;
@@ -120,24 +124,24 @@
   color: #2d2e47;
   font-size:18px;
   min-height: 50px;
-  min-width: 70px;
+  min-width: 60px;
   outline: none;
   transition: all 0.1s ease;
 }
 .button-double {
-  min-width: 140px;
+  min-width: 120px;
 }
 
 .button:hover{
-  background-color: #d7d7f1;
-  border-color: #d7d7f1;
+  background-color: #96c9ff;
+  /* border-color: #edf8ff; */
   color: #171a26;
   cursor: pointer;
   transition: all 0s;
 }
 .button:active{
-  background-color: #6575b1;
-  color: #171a26;
+  background-color: #66a8ed;
+  border-color: #66a8ed;
   cursor: pointer;
   transition: all 0s ease;
 }
@@ -172,15 +176,33 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   display: block;
-  width: 280px;
+  width: 240px;
   padding: 12px;
   text-align: right;
 }
+.text-summary{
+  color: #f2a229;
+}
 .text-orange{
-  color: #e0931f;
+  color: #324aa8;
+  background-color: #e0f3ff;
+  border-top-color: #aacee6;
+  border-right-color: #aacee6;
+}
+.text-orange:hover{
+  background-color: #324aa8;
+  border-color: #324aa8;
+  color: #fff;
+}
+.text-orange:active{
+  background-color: #2d2e47;
 }
 .text-small{
   font-size: 12px;
+  line-height: normal;
+}
+.text-mid{
+  font-size: 15px;
 }
 .mar-top-small{
   margin-top: 5px;

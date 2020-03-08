@@ -10,7 +10,12 @@ class Keypad extends React.Component {
       <div>
         <div className="keypad-row">
           <Button val="C" onClick = {handleClick} onKeyPress = {handleClick} addClass="text-orange"></Button>
-          <Button val="%" onClick = {handleClick} addClass="text-orange"></Button>
+          <Button val="+/-" onClick = {handleClick} addClass="text-orange text-mid"></Button>
+          <Button val="DEL" onClick = {handleClick} addClass="text-orange text-small button-double"></Button>
+        </div>
+        <div className="keypad-row">
+          <Button val="%" onClick = {handleClick} onKeyPress = {handleClick} addClass="text-orange"></Button>
+          <Button val="√" onClick = {handleClick} addClass="text-orange"></Button>
           <Button val="ₓʸ" onClick = {handleClick} addClass="text-orange"></Button>
           <Button val="×" onClick = {handleClick} addClass="text-orange"></Button>
         </div>

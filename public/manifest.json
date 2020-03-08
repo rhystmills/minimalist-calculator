@@ -1,13 +1,13 @@
 {
   "manifest_version": 2,
 
-  "name": "Calculator",
+  "name": "Minimalist Calculator",
   "description": "A fast and accurate calculator.",
   "version": "0.0.1",
 
   "browser_action": {
     "default_popup": "index.html",
-    "default_title": "Calculator running"
+    "default_title": "Minimalist Calculator"
   },
   "icons": {
     "16": "logo-small.png",

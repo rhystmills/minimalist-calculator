@@ -5,8 +5,8 @@ Get the extension here:
 [Minimalist Calculator on the Chrome Store](https://chrome.google.com/webstore/detail/minimalist-calculator/ndjgjlhkejbigpggeceemkahlcbdemhp)
 
 ![The calculator in action](https://raw.githubusercontent.com/rhystmills/minimalist-calculator/master/images/calc-screenshot-github.png)
-
 ===================================
+
 Currently supports:
 * Keyboard input
 * Basic arithmetic (+,-,×,÷)

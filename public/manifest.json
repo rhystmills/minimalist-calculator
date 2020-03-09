@@ -3,7 +3,7 @@
 
   "name": "Minimalist Calculator",
   "description": "A fast and accurate calculator.",
-  "version": "0.0.1",
+  "version": "1.0.0",
 
   "browser_action": {
     "default_popup": "index.html",
@@ -14,6 +14,6 @@
     "48": "logo-small.png",
     "128": "logo-small.png"
   },
-  "content_security_policy": "script-src 'self' 'sha256-2vrWj/crgOdFLKa9KzmO1prrV93m9mRh5Nm8KYUkRKA='; object-src 'self'",  "permissions": [
+  "content_security_policy": "script-src 'self' 'sha256-tw5uNCLvtXpPMlwhNWsN4vWp5jVE8kyA0Ot+WWw3+6M='; object-src 'self'",  "permissions": [
   ]
 }
